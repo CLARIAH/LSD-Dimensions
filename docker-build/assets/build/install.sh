@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-LSD_CLONE_URL=https://github.com/albertmeronyo/LSD-Dimensions.git
+LSD_CLONE_URL=https://github.com/CLARIAH/LSD-Dimensions.git
 
 ## Execute a command as GITLAB_USER
 exec_as_lsd() {
