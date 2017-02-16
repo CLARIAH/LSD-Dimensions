@@ -32,79 +32,79 @@ def lsd_dimensions():
 
     return render_template('lsd-dimensions.html', results=dims, num_dims=len(dims["results"]["bindings"]), num_endpoints=int(num_endpoints["results"]["bindings"][0]["num_endpoints"]["value"]))
 
-@app.route("/dimensions/<id>", methods=["GET"])
-def get_dimension(id):
-    # TODO: avoid this lazy load on demand
-    local_json = None
-    with open('data.json', 'r') as infile:
-        local_json = json.load(infile)
-    for dim in local_json:
-        if int(dim['id']) == int(id):
-            dimension_uri = dim['uri']
-    # Search for all we got about dimension_uri
-    endpoints_results = db.dimensions.find(
-        {"dimensions.uri" : dimension_uri},
-        {"endpoint.url" : 1}
-    ).distinct("endpoint.url")
-    codes_results = db.dimensions.aggregate([
-        {"$unwind" : "$dimensions"},
-        {"$unwind" : "$dimensions.codes"},
-        {"$match" : {"dimensions.uri" : dimension_uri}},
-        {"$group" : {"_id" : {"uri" : "$dimensions.codes.uri", "label" : "$dimensions.codes.label"}}}
-    ])
-
-    return render_template('dimension.html', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
+# @app.route("/dimensions/<id>", methods=["GET"])
+# def get_dimension(id):
+#     # TODO: avoid this lazy load on demand
+#     local_json = None
+#     with open('data.json', 'r') as infile:
+#         local_json = json.load(infile)
+#     for dim in local_json:
+#         if int(dim['id']) == int(id):
+#             dimension_uri = dim['uri']
+#     # Search for all we got about dimension_uri
+#     endpoints_results = db.dimensions.find(
+#         {"dimensions.uri" : dimension_uri},
+#         {"endpoint.url" : 1}
+#     ).distinct("endpoint.url")
+#     codes_results = db.dimensions.aggregate([
+#         {"$unwind" : "$dimensions"},
+#         {"$unwind" : "$dimensions.codes"},
+#         {"$match" : {"dimensions.uri" : dimension_uri}},
+#         {"$group" : {"_id" : {"uri" : "$dimensions.codes.uri", "label" : "$dimensions.codes.label"}}}
+#     ])
+#
+#     return render_template('dimension.html', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
 
 @app.route("/about", methods=["GET"])
 def about():
     return render_template('about.html')
 
-@app.route("/dsds", methods=["GET"])
-def dsds():
-    num_endpoints = db.dimensions.count()
-    dsds = db.dsds.find(
-        {},
-        {"_id" : 1, "dsd.uri" : 1}
-        )
-    num_dsds = db.dsds.count()
+# @app.route("/dsds", methods=["GET"])
+# def dsds():
+#     num_endpoints = db.dimensions.count()
+#     dsds = db.dsds.find(
+#         {},
+#         {"_id" : 1, "dsd.uri" : 1}
+#         )
+#     num_dsds = db.dsds.count()
+#
+#     return render_template('dsds.html', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
 
-    return render_template('dsds.html', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
+# @app.route('/dsds/<id>', methods=["GET"])
+# def get_dsd(id):
+#     # Search for all we got about dsd_uri
+#     dsd_results = db.dsds.find_one(
+#         {"_id" : ObjectId(id)}
+#         )
+#
+#     return render_template('dsd.html', dsd_results=dsd_results)
 
-@app.route('/dsds/<id>', methods=["GET"])
-def get_dsd(id):
-    # Search for all we got about dsd_uri
-    dsd_results = db.dsds.find_one(
-        {"_id" : ObjectId(id)}
-        )
-
-    return render_template('dsd.html', dsd_results=dsd_results)
-
-@app.route('/dsds/sim-load', methods=["GET"])
-def dsd_sim_load():
-    # Get all dsds
-    dsds = db.dsds.find({})
-    with open('dsd_data.json', 'w') as outfile:
-        with open('dsd_data.csv', 'w') as csvfile:
-            csvwriter = csv.writer(csvfile, delimiter=',',
-                                   quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-            csvwriter.writerow(["dsd_a", "dsd_b", "distance"])
-            outfile.write("[")
-            for pair in itertools.combinations(dsds, 2):
-                a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
-                b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
-                a_uri = pair[0]["dsd"]["uri"]
-                b_uri = pair[1]["dsd"]["uri"]
-                a_id = pair[0]["_id"]
-                b_id = pair[1]["_id"]
-                dist = distance.jaccard(a_components, b_components)
-                item = {"uri_a" : "<a href='/dsds/%s'>%s</a>" % (a_id, a_uri),
-                        "uri_b" : "<a href='/dsds/%s'>%s</a>" % (b_id, b_uri),
-                        "dist" : dist}
-                outfile.write(json.dumps(item, outfile)+",")
-                csvwriter.writerow([a_uri, b_uri, dist])
-            outfile.write("]")
-
-    return "OK"
+# @app.route('/dsds/sim-load', methods=["GET"])
+# def dsd_sim_load():
+#     # Get all dsds
+#     dsds = db.dsds.find({})
+#     with open('dsd_data.json', 'w') as outfile:
+#         with open('dsd_data.csv', 'w') as csvfile:
+#             csvwriter = csv.writer(csvfile, delimiter=',',
+#                                    quotechar='\"', quoting=csv.QUOTE_MINIMAL)
+#             csvwriter.writerow(["dsd_a", "dsd_b", "distance"])
+#             outfile.write("[")
+#             for pair in itertools.combinations(dsds, 2):
+#                 a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
+#                 b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
+#                 a_uri = pair[0]["dsd"]["uri"]
+#                 b_uri = pair[1]["dsd"]["uri"]
+#                 a_id = pair[0]["_id"]
+#                 b_id = pair[1]["_id"]
+#                 dist = distance.jaccard(a_components, b_components)
+#                 item = {"uri_a" : "<a href='/dsds/%s'>%s</a>" % (a_id, a_uri),
+#                         "uri_b" : "<a href='/dsds/%s'>%s</a>" % (b_id, b_uri),
+#                         "dist" : dist}
+#                 outfile.write(json.dumps(item, outfile)+",")
+#                 csvwriter.writerow([a_uri, b_uri, dist])
+#             outfile.write("]")
+#
+#     return "OK"
 
 @app.route('/dsds/sim', methods=["GET"])
 def dsd_sim():
