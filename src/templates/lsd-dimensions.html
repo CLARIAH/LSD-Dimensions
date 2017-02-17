@@ -7,13 +7,13 @@
 
 <div class="row">
   <div class="col-xs-1">
-    <label for="query">Query string</label>
+    <label for="query">Dimension string</label>
   </div>
   <div class="col-xs-9">
-    <input class="form-control" id="query" placeholder="Sex" value="Sex">
+    <input class="form-control" id="query" placeholder="For example, 'sex'">
   </div>
   <div class="col-xs-2">
-    <button type="submit" id="get_dimensions_button" class="btn btn-default">Get dimensions</button>
+    <button type="submit" id="get_dimensions_button" class="btn btn-default">Find dimensions</button>
   </div>
 </div>
 
@@ -30,13 +30,13 @@
 
 <div class="row">
   <div class="col-xs-1">
-    <label for="codes">Dimension URI</label>
+    <label for="codes">Code string</label>
   </div>
   <div class="col-xs-9">
-    <input class="form-control" id="codes" placeholder="http://purl.org/linked-data/sdmx/2009/dimension#sex" value="http://purl.org/linked-data/sdmx/2009/dimension#sex">
+    <input class="form-control" id="codes" placeholder="For example, 'female'">
   </div>
   <div class="col-xs-2">
-    <button type="submit" id="get_codes_button" class="btn btn-default" onClick="window.location.href='http://grlc.io/api/albertmeronyo/lsd-queries/codes?dim='+encodeURIComponent(document.getElementById('codes').value);">Get codes</button>
+    <button type="submit" id="get_codes_button" class="btn btn-default">Find codes</button>
   </div>
 </div>
 
